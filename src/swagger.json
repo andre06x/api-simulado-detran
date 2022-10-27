@@ -1,0 +1,239 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "API DETRAN SIMULADO",
+    "description": "API para gerenciar as questões do simulado detran rj",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/requisitar-todas-perguntas": {
+      "get": {
+        "summary": "Todas perguntas",
+        "tags": [
+          "Perguntas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/requisitar-placas": {
+      "get": {
+        "summary": "Todas as perguntas sobre placas",
+        "tags": [
+          "Perguntas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/pesquisar-pergunta": {
+      "get": {
+        "summary": "Pesquisar perguntas",
+        "tags": [
+          "Perguntas"
+        ],
+        "consumes": [
+          "text/plain"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "palavras_chave",
+            "description": "Palavras-chave a serem procuradas no titulo das perguntas",
+            "required": true,
+            "type": "string",
+            "default": "Coletora"
+          },
+
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limit de request",
+            "required": true,
+            "type": "string",
+            "default": "5"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          },
+          "404": {
+            "description": "ERROR",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      },
+      "/teste":{
+        "get": {
+
+        }
+      }
+      
+    },
+    "/gerar-simulado/{quantidade}": {
+      "get": {
+        "summary": "Gerar simulado de forma aleatoriamente",
+        "tags": [
+          "Perguntas"
+        ],
+        "parameters": [
+          {
+            "name": "quantidade",
+            "in": "path",
+            "description": "Quantidade de questões a ser gerada",
+            "required": true,
+            "minimum": 1,
+            "default": 30,
+            "type": "number"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+    "/dados-gerais": {
+      "get": {
+        "summary": "Dados gerais da aplicação",
+        "tags": [
+          "Dados Gerais"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    },
+
+    "/requisicoes-validas": {
+      "get": {
+        "summary": "Requisções válidas com inserts",
+        "tags": [
+          "Requisicoes Perguntas"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {}
+            }
+          }
+        }
+      }
+    }
+  }, 
+  "components": {
+    "schemas": {
+      "perguntas": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "uuid"
+          },
+          "id_conteudo": {
+            "type": "string"
+          },
+          "titulo": {
+            "type": "string"
+          },
+          "imagem_url": {
+            "type": "string"
+          },
+          "numero_questao": {
+            "type": "string"
+          },
+          "frequencia": {
+            "type": "bigInteger"
+          },
+          "data_insercao": {
+            "type": "string"
+          },
+          "tipo": {
+            "type": "string"
+          }
+        }
+      },
+      "respostas": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "uuid"
+          },
+          "pergunta_id": {
+            "type": "uuid"
+          },
+          "nome_alternativa": {
+            "type": "string"
+          },
+          "numero_alternativa": {
+            "type": "string"
+          },
+          "correta": {
+            "type": "boolean"
+          }
+        }
+      },
+      "requisicoes_perguntas": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "bigInteger"
+          },
+          "quantidade_insert": {
+            "type": "string"
+          },
+          "quantidade_falhas_insert": {
+            "type": "string"
+          },
+          "exito": {
+            "type": "boolean"
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      },
+      "bot_erros": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "bigInteger"
+          },
+          "tipo_erro": {
+            "type": "string"
+          },
+          "data": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}
