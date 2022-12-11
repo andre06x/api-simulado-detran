@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@apollo/client';
+import { CiClock1 } from 'react-icons/ci';
 
 import { REQ_GERAR_SIMULADO } from '../../services/querys';
 import {
 	BsFillArrowRightCircleFill,
 	BsFillArrowLeftCircleFill,
 } from 'react-icons/bs';
+
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import './styles.scss';
+import ProgressBar from '@ramonak/react-progress-bar';
 
 type TypePergunta = {
 	titulo: string;
@@ -122,53 +126,95 @@ const Simulado = () => {
 	};
 
 	return (
-		<div className="px-3 py-3" style={{ backgroundColor: ' #E9ECEF' }}>
-			<div className="container-pergunta">
-				<span className="identificador-pergunta">
-					QUESTÃO {perguntaIndex + 1}
-				</span>
-				<p>{pergunta.titulo}</p>
-				{pergunta.imagem_url ? (
-					<div>
-						<img
-							src={pergunta.imagem_url}
-							alt=""
-							className="mb-1"
-							width={200}
-							height={100}
-						/>
+		<div className="pb-3">
+			<div
+				className="container-header px-3 pt-3 pb-2"
+				style={{ backgroundColor: '#28A956' }}
+			>
+				<div className="d-flex align-items-center justify-content-between mb-3">
+					<div className="d-flex flex-column">
+						<h1 className="titulo">Simulado</h1>
+						<span className="quantidade-questoes">
+							{data.simulado.length} QUESTÕES
+						</span>
 					</div>
-				) : null}
+
+					<div className="d-flex flex-column align-items-center">
+						<CiClock1 color="#fff" size={35} />
+						<span className="minutos-restantes">20:00</span>
+					</div>
+				</div>
+
+				<div className="d-flex flex-column pb-5">
+					<ProgressBar
+						height="7px"
+						bgColor="#FFD54F"
+						completed={perguntaIndex + 1}
+						maxCompleted={data.simulado.length}
+						labelClassName="label-progress"
+					/>
+					<span className="text-end py-2" style={{ color: '#fff' }}>
+						{`${perguntaIndex + 1} / ${data.simulado.length}`}
+					</span>
+				</div>
 			</div>
 
-			<div>
-				{pergunta.respostas.map(
-					(alternativas: TypeAlternativas, index: number) => (
-						<div
-							key={index}
-							className="d-flex align-items-center container-alternativa"
-							onClick={() => marcarResposta(alternativas)}
-						>
-							<input
-								className="me-2 "
-								type="radio"
-								name={alternativas.pergunta_id}
-								id=""
-								checked={verificarSelecionado(alternativas)}
+			<div className="px-3" style={{ marginTop: -40 }}>
+				<div className="container-simulado">
+					<span className="identificador-pergunta">
+						QUESTÃO {perguntaIndex + 1}
+					</span>
+					<p>{pergunta.titulo}</p>
+					{pergunta.imagem_url ? (
+						<div>
+							<img
+								src={pergunta.imagem_url}
+								alt=""
+								className="mb-1"
+								width={200}
+								height={100}
 							/>
-							<span>{alternativas.nome_alternativa}</span>
 						</div>
-					),
-				)}
-			</div>
+					) : null}
+				</div>
 
-			<div className="d-flex justify-content-between">
-				<button className="btn" onClick={() => voltarQuestao()}>
-					<BsFillArrowLeftCircleFill color="#17aded" size={30} />
-				</button>
-				<button className="btn" onClick={() => proximaQuestao()}>
-					<BsFillArrowRightCircleFill color="#17aded" size={30} />
-				</button>
+				<div>
+					{pergunta.respostas.map(
+						(alternativas: TypeAlternativas, index: number) => (
+							<div
+								key={index}
+								className="d-flex align-items-center container-alternativa"
+								onClick={() => marcarResposta(alternativas)}
+							>
+								<input
+									className="me-2 "
+									type="radio"
+									name={alternativas.pergunta_id}
+									id=""
+									checked={verificarSelecionado(alternativas)}
+								/>
+								<span>{alternativas.nome_alternativa}</span>
+							</div>
+						),
+					)}
+				</div>
+
+				<div className="d-flex justify-content-between">
+					<button
+						className="btn rounded-circle"
+						style={{ backgroundColor: '#28A956' }}
+						onClick={() => voltarQuestao()}
+					>
+						<BiLeftArrowAlt color="white" size={35} />
+					</button>
+					<button
+						className="btn rounded-circle"
+						style={{ backgroundColor: '#28A956' }}
+						onClick={() => proximaQuestao()}
+					>
+						<BiRightArrowAlt color="white" size={35} />
+					</button>
+				</div>
 			</div>
 		</div>
 	);
