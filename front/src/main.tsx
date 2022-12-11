@@ -5,6 +5,8 @@ import ReactDOM from 'react-dom/client';
 import { client } from './services/client';
 import { RoutesApp } from './router/routes';
 
+import 'bootstrap/dist/css/bootstrap.css';
+
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
 	<React.StrictMode>
 		<ApolloProvider client={client}>
