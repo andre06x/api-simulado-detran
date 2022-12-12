@@ -11,6 +11,7 @@ import {
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import './styles.scss';
 import ProgressBar from '@ramonak/react-progress-bar';
+import { useNavigate } from 'react-router-dom';
 
 type TypePergunta = {
 	titulo: string;
@@ -31,34 +32,158 @@ type TypeRespostasSalvas = {
 	alternativa_marcada: string;
 };
 
-const Simulado = () => {
-	const [perguntaIndex, setPerguntaIndex] = useState(0);
-	const [respostasSalvas, setRespostasSalvas] = useState<TypeRespostasSalvas[]>(
-		[],
-	);
-
-	const quantidade = 30;
-	const { loading, error, data } = useQuery(REQ_GERAR_SIMULADO, {
-		variables: { quantidade },
-	});
+const Resultado = ({ data, respostasSalvas, navigate }) => {
+	const [status, setStatus] = useState({ rc: 0, re: 0, total: 0 });
 
 	useEffect(() => {
-		if (data) {
-			console.log(data);
-			const respostasCertas = data.simulado.map((pergunta: TypePergunta) =>
-				pergunta.respostas
-					.filter(
-						(alternativa: TypeAlternativas) => alternativa.correta === true,
-					)
-					.shift(),
-			);
-			console.log(respostasCertas);
+		let rc = 0,
+			re = 0,
+			total = 0;
+
+		for (let i = 0; i < respostasSalvas.length; i++) {
+			const respostaCorreta = data.simulado
+				.filter((pergunta) => pergunta.id === respostasSalvas[i].pergunta_id)[0]
+				.respostas.filter((respostas) => respostas.correta === true)[0];
+
+			const respostaEstaCorreta =
+				respostaCorreta.id === respostasSalvas[i].alternativa_id;
+
+			if (respostaEstaCorreta) {
+				rc += 1;
+			}
 		}
-	}, [data]);
+		total = data.simulado.length;
+		re = total - rc;
 
-	if (loading) return <p>Loading...</p>;
-	if (error) return <p>Error : {error.message}</p>;
+		const objStatus = {
+			rc,
+			re,
+			total,
+		};
 
+		console.log();
+		setStatus(objStatus);
+	}, []);
+
+	const respostaCorreta = (perguntaItem) => {
+		const respostaCorreta = data.simulado
+			.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
+			.respostas.filter((respostas) => respostas.correta === true)
+			.shift();
+
+		//console.log(respostaCorreta);
+		return respostaCorreta.nome_alternativa;
+	};
+
+	const procurarResposta = (perguntaItem) => {
+		const respostaCorreta = data.simulado
+			.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
+			.respostas.filter((respostas) => respostas.correta === true)[0];
+
+		const perguntaRespondida = respostasSalvas.find(
+			(r) => r.pergunta_id === perguntaItem.id,
+		);
+
+		if (!perguntaRespondida) {
+			return <span>Não respondeu 😶</span>;
+		}
+
+		const respostaEstaCorreta =
+			respostaCorreta.id === perguntaRespondida.alternativa_id;
+
+		if (!respostaEstaCorreta) {
+			console.log(perguntaRespondida);
+			return (
+				<div className="d-flex flex-column">
+					<span style={{ color: 'red' }}>Você errou 🙁.</span>
+					<span>
+						Resposta marcada: {perguntaRespondida.alternativa_marcada}
+					</span>
+				</div>
+			);
+		}
+
+		if (respostaEstaCorreta) {
+			return <span style={{ color: 'green' }}>Você acertou 😃!</span>;
+		}
+	};
+
+	const verificarAprovacao = () => {
+		const aprovado = status.rc > (70 / 100) * status.total;
+		if (aprovado) {
+			return (
+				<span className="fw-bold ms-2" style={{ color: '#fff' }}>
+					APROVADO!
+				</span>
+			);
+		} else {
+			return <span className="ms-2 fw-bold">REPROVADO!</span>;
+		}
+	};
+
+	const novoSimulado = () => {
+		navigate('/simulado');
+	};
+	return (
+		<div className="pb-3">
+			<div
+				className="container-header px-3 pt-3 pb-4"
+				style={{ backgroundColor: '#28A956' }}
+			>
+				<div className="d-flex align-items-center justify-content-between mb-3">
+					<div className="d-flex flex-column">
+						<h1 className="titulo">RESULTADO</h1>
+						<h1 onClick={() => novoSimulado()}>NOVO</h1>
+						<div>
+							<span className="quantidade-questoes">
+								{`${status.rc}/${status.re}/${status.total}`}
+							</span>
+							{verificarAprovacao()}
+						</div>
+					</div>
+
+					<div className="d-flex flex-column align-items-center">
+						<span className="minutos">20:00</span>
+					</div>
+				</div>
+			</div>
+
+			<div className="px-3" style={{ marginTop: -25 }}>
+				{data.simulado.map((pergunta, index: number) => (
+					<div className="container-simulado">
+						<span className="identificador-pergunta">QUESTÃO {index + 1}</span>
+						<p>{pergunta.titulo}</p>
+						{pergunta.imagem_url ? (
+							<div>
+								<img
+									src={pergunta.imagem_url}
+									alt=""
+									className="mb-1"
+									width={180}
+									height={100}
+								/>
+							</div>
+						) : null}
+
+						<div className="d-flex flex-column pt-4 pb-3">
+							<span>{procurarResposta(pergunta)}</span>
+							<span>Resposta Correta: {respostaCorreta(pergunta)}</span>
+						</div>
+					</div>
+				))}
+			</div>
+		</div>
+	);
+};
+
+const Questoes = ({
+	data,
+	perguntaIndex,
+	setPerguntaIndex,
+	respostasSalvas,
+	setRespostasSalvas,
+	setComponent,
+}) => {
 	const pergunta = data.simulado[perguntaIndex];
 
 	const proximaQuestao = () => {
@@ -109,8 +234,6 @@ const Simulado = () => {
 
 			setRespostasSalvas([...respostasSalvas, objResposta]);
 		}
-
-		console.log(respostasSalvas);
 	};
 
 	const verificarSelecionado = (alternativa: TypeAlternativas) => {
@@ -123,6 +246,10 @@ const Simulado = () => {
 		} else {
 			return false;
 		}
+	};
+
+	const corrigir = () => {
+		setComponent('Resultado');
 	};
 
 	return (
@@ -171,7 +298,7 @@ const Simulado = () => {
 								src={pergunta.imagem_url}
 								alt=""
 								className="mb-1"
-								width={200}
+								width={180}
 								height={100}
 							/>
 						</div>
@@ -192,6 +319,7 @@ const Simulado = () => {
 									name={alternativas.pergunta_id}
 									id=""
 									checked={verificarSelecionado(alternativas)}
+									readOnly
 								/>
 								<span>{alternativas.nome_alternativa}</span>
 							</div>
@@ -208,6 +336,16 @@ const Simulado = () => {
 						<BiLeftArrowAlt color="white" size={35} />
 					</button>
 					<button
+						className="btn rounded"
+						style={{
+							backgroundColor: '#28A956',
+							color: '#fff',
+						}}
+						onClick={() => corrigir()}
+					>
+						Corrigir
+					</button>
+					<button
 						className="btn rounded-circle"
 						style={{ backgroundColor: '#28A956' }}
 						onClick={() => proximaQuestao()}
@@ -218,6 +356,41 @@ const Simulado = () => {
 			</div>
 		</div>
 	);
+};
+
+const Simulado = () => {
+	const quantidade = 5;
+	const [componente, setComponent] = useState('Questoes');
+
+	const [perguntaIndex, setPerguntaIndex] = useState(0);
+	const [respostasSalvas, setRespostasSalvas] = useState<TypeRespostasSalvas[]>(
+		[],
+	);
+
+	const { loading, error, data, refetch } = useQuery(REQ_GERAR_SIMULADO, {
+		variables: { quantidade },
+	});
+
+	const navigate = useNavigate();
+	const componentes = {
+		Questoes: (
+			<Questoes
+				data={data}
+				perguntaIndex={perguntaIndex}
+				setPerguntaIndex={setPerguntaIndex}
+				respostasSalvas={respostasSalvas}
+				setRespostasSalvas={setRespostasSalvas}
+				setComponent={setComponent}
+				navigate={navigate}
+			/>
+		),
+		Resultado: <Resultado data={data} respostasSalvas={respostasSalvas} />,
+	};
+
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error : {error.message}</p>;
+
+	return componentes[`${componente}`];
 };
 
 export { Simulado };
