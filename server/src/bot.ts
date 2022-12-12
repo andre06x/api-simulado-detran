@@ -1,4 +1,5 @@
-require('dotenv').config();
+require("dotenv").config();
+import fs from "fs";
 import puppeteer from "puppeteer";
 import axios from "axios";
 import moment from "moment";
@@ -17,28 +18,43 @@ interface Respostas {
 }
 
 const api = axios.create({
-  baseURL: `http://${process.env.HOST_API}:${process.env.PORT_API}`
+  baseURL: `http://${process.env.HOST_API}:${process.env.PORT_API}`,
 });
 
 const postarErros = async (tipo: string) => {
-  console.log(`Erro ${tipo} ${moment().format()}`)
+  console.log(`Erro ${tipo} ${moment().format()}`);
   try {
     await api.post(`/postar-erros`, {
       chave: process.env.PASSWORD_AUTH_BOT,
       data: {
         tipo: tipo,
         data: moment().format("YYYY-MM-DD HH:mm:ss"),
-      }
+      },
     });
   } catch (err) {
-    console.log(err)
+    console.log(err);
     console.log("Erro try/catch " + tipo);
   }
-}
+};
+
+const verificarRepetidos = (data: Pergunta[]) => {
+  const verificarRepetidos = data.filter(function (a) {
+    return (
+      !this[JSON.stringify(a.numero_questao)] &&
+      (this[JSON.stringify(a.numero_questao)] = true)
+    );
+  }, Object.create(null));
+
+  console.log("Verificar repetidos:" + verificarRepetidos.length);
+  if (verificarRepetidos.length !== 30) {
+    throw new Error("Quantidade incompatível");
+  }
+};
 
 export const botDetran = async () => {
   const browser = await puppeteer.launch({
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    headless: true,
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
   });
 
   const newTab = async () => {
@@ -61,9 +77,9 @@ export const botDetran = async () => {
 
       for (let i = 1; i <= 30; i++) {
         const resultado = await page.evaluate(() => {
-
           let titulo = document.getElementById("div-questao")?.innerHTML;
-          let numero_questao = document.getElementById("div-numero-questao")?.innerHTML;
+          let numero_questao =
+            document.getElementById("div-numero-questao")?.innerHTML;
 
           let imgPlaca = document.querySelector("#img-placa") as HTMLElement;
           var imagem_url = "";
@@ -81,12 +97,11 @@ export const botDetran = async () => {
 
           let questoes = document.querySelectorAll(".alinhar-alternativa");
           questoes.forEach((questao, indice) => {
-
             const respontas: Respostas = {
               nome_alternativa: questao.innerHTML,
               numero_alternativa: questao.getAttribute("for") as string,
               correta: false,
-            }
+            };
 
             objetoPergunta.respostas.push(respontas);
           });
@@ -114,54 +129,55 @@ export const botDetran = async () => {
             );
             await page.click(`#conteudo > div > div > div:nth-child(${i + 1})`);
 
-            const resultado2 = await page.evaluate((i) => ({
-              posicaoResposta: i,
-              repostaCorreta: document
-                .getElementsByClassName("alinhar-alternativa correta")
-              [i].getAttribute("for")
-            }), i);
+            const resultado2 = await page.evaluate(
+              (i) => ({
+                posicaoResposta: i,
+                repostaCorreta: document
+                  .getElementsByClassName("alinhar-alternativa correta")
+                  [i].getAttribute("for"),
+              }),
+              i
+            );
 
             arrayPergustasRespostas[resultado2.posicaoResposta].respostas.find(
-              (r: Respostas) => r.numero_alternativa === resultado2.repostaCorreta
+              (r: Respostas) =>
+                r.numero_alternativa === resultado2.repostaCorreta
             ).correta = true;
           }
 
           try {
-
             const dataRespostas = {
               data: arrayPergustasRespostas,
               chave: process.env.PASSWORD_AUTH_BOT,
-              timeout: 5000
+              timeout: 5000,
             };
 
-            await api.post(`/postar-perguntas`, dataRespostas);
+            verificarRepetidos(dataRespostas.data);
+            //await api.post(`/postar-perguntas`, dataRespostas);
+            console.log("Salvo!");
 
+            await page.close();
+            setTimeout(() => newTab(), Number(process.env.DELAY_NEW_TAB));
           } catch (err) {
             postarErros("Erro na requisicao");
           }
 
           if (page) {
-            await page.close();
+            //await page.close();
             setTimeout(() => newTab(), Number(process.env.DELAY_NEW_TAB));
           }
-
-
         } catch (err) {
           postarErros("Erro ao encontrar o botao");
           await page.close();
           setTimeout(() => newTab(), Number(process.env.DELAY_NEW_TAB));
         }
       }, 1500);
-
     } catch (err) {
       await page.close();
       postarErros("Erro bot geral");
       setTimeout(() => newTab(), Number(process.env.DELAY_NEW_TAB));
     }
-  }
+  };
 
   newTab();
 };
-
-
-
