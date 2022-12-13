@@ -4,6 +4,7 @@ import App from '../App';
 import { DadosGerais } from '../Pages/dadosGerais';
 import { Placas } from '../Pages/placas/placas';
 import { ProcurarPergunta } from '../Pages/procurarPergunta';
+import { Resultado } from '../Pages/resultado';
 import { Simulado } from '../Pages/simulado';
 
 const RoutesApp = () => {
@@ -12,6 +13,8 @@ const RoutesApp = () => {
 			<Routes>
 				<Route path="/" element={<App />} />
 				<Route path="/simulado" element={<Simulado />} />
+				<Route path="/resultado" element={<Resultado />} />
+
 				<Route path="/pergunta" element={<ProcurarPergunta />} />
 				<Route path="/placas" element={<Placas />} />
 				<Route path="/dados-gerais" element={<DadosGerais />} />
