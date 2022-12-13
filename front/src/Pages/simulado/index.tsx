@@ -1,18 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
+
 import { CiClock1 } from 'react-icons/ci';
+import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
+import ProgressBar from '@ramonak/react-progress-bar';
 
 import { REQ_GERAR_SIMULADO } from '../../services/querys';
-import {
-	BsFillArrowRightCircleFill,
-	BsFillArrowLeftCircleFill,
-} from 'react-icons/bs';
 
-import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
+import { usePerguntas, useRespostasSalvas } from '../../zustand';
+import { Timer } from '../../Components/Timer';
+
 import './styles.scss';
-import ProgressBar from '@ramonak/react-progress-bar';
-import { useNavigate } from 'react-router-dom';
-
 type TypePergunta = {
 	titulo: string;
 	imagem_url: string;
@@ -32,158 +31,36 @@ type TypeRespostasSalvas = {
 	alternativa_marcada: string;
 };
 
-const Resultado = ({ data, respostasSalvas, navigate }) => {
-	const [status, setStatus] = useState({ rc: 0, re: 0, total: 0 });
+const Simulado = () => {
+	const quantidade = 5;
+
+	const [perguntaIndex, setPerguntaIndex] = useState(0);
+
+	const dataPerguntas = usePerguntas((state) => state.dataPerguntas);
+	const setarPerguntas = usePerguntas((state) => state.setarPerguntas);
+
+	const respostasSalvas = useRespostasSalvas((state) => state.respostasSalvas);
+	const setRespostasSalvas = useRespostasSalvas(
+		(state) => state.setRespostasSalvas,
+	);
+
+	const { loading, error, data } = useQuery(REQ_GERAR_SIMULADO, {
+		variables: { quantidade },
+		fetchPolicy: 'network-only',
+	});
 
 	useEffect(() => {
-		let rc = 0,
-			re = 0,
-			total = 0;
-
-		for (let i = 0; i < respostasSalvas.length; i++) {
-			const respostaCorreta = data.simulado
-				.filter((pergunta) => pergunta.id === respostasSalvas[i].pergunta_id)[0]
-				.respostas.filter((respostas) => respostas.correta === true)[0];
-
-			const respostaEstaCorreta =
-				respostaCorreta.id === respostasSalvas[i].alternativa_id;
-
-			if (respostaEstaCorreta) {
-				rc += 1;
-			}
+		console.log(data);
+		if (data?.simulado.length > 0) {
+			setarPerguntas(data);
 		}
-		total = data.simulado.length;
-		re = total - rc;
+	}, [data, dataPerguntas]);
 
-		const objStatus = {
-			rc,
-			re,
-			total,
-		};
+	const navigate = useNavigate();
 
-		console.log();
-		setStatus(objStatus);
-	}, []);
+	if (loading) return <p>Loading...</p>;
+	if (error) return <p>Error : {error.message}</p>;
 
-	const respostaCorreta = (perguntaItem) => {
-		const respostaCorreta = data.simulado
-			.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
-			.respostas.filter((respostas) => respostas.correta === true)
-			.shift();
-
-		//console.log(respostaCorreta);
-		return respostaCorreta.nome_alternativa;
-	};
-
-	const procurarResposta = (perguntaItem) => {
-		const respostaCorreta = data.simulado
-			.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
-			.respostas.filter((respostas) => respostas.correta === true)[0];
-
-		const perguntaRespondida = respostasSalvas.find(
-			(r) => r.pergunta_id === perguntaItem.id,
-		);
-
-		if (!perguntaRespondida) {
-			return <span>Não respondeu 😶</span>;
-		}
-
-		const respostaEstaCorreta =
-			respostaCorreta.id === perguntaRespondida.alternativa_id;
-
-		if (!respostaEstaCorreta) {
-			console.log(perguntaRespondida);
-			return (
-				<div className="d-flex flex-column">
-					<span style={{ color: 'red' }}>Você errou 🙁.</span>
-					<span>
-						Resposta marcada: {perguntaRespondida.alternativa_marcada}
-					</span>
-				</div>
-			);
-		}
-
-		if (respostaEstaCorreta) {
-			return <span style={{ color: 'green' }}>Você acertou 😃!</span>;
-		}
-	};
-
-	const verificarAprovacao = () => {
-		const aprovado = status.rc > (70 / 100) * status.total;
-		if (aprovado) {
-			return (
-				<span className="fw-bold ms-2" style={{ color: '#fff' }}>
-					APROVADO!
-				</span>
-			);
-		} else {
-			return <span className="ms-2 fw-bold">REPROVADO!</span>;
-		}
-	};
-
-	const novoSimulado = () => {
-		navigate('/simulado');
-	};
-	return (
-		<div className="pb-3">
-			<div
-				className="container-header px-3 pt-3 pb-4"
-				style={{ backgroundColor: '#28A956' }}
-			>
-				<div className="d-flex align-items-center justify-content-between mb-3">
-					<div className="d-flex flex-column">
-						<h1 className="titulo">RESULTADO</h1>
-						<h1 onClick={() => novoSimulado()}>NOVO</h1>
-						<div>
-							<span className="quantidade-questoes">
-								{`${status.rc}/${status.re}/${status.total}`}
-							</span>
-							{verificarAprovacao()}
-						</div>
-					</div>
-
-					<div className="d-flex flex-column align-items-center">
-						<span className="minutos">20:00</span>
-					</div>
-				</div>
-			</div>
-
-			<div className="px-3" style={{ marginTop: -25 }}>
-				{data.simulado.map((pergunta, index: number) => (
-					<div className="container-simulado">
-						<span className="identificador-pergunta">QUESTÃO {index + 1}</span>
-						<p>{pergunta.titulo}</p>
-						{pergunta.imagem_url ? (
-							<div>
-								<img
-									src={pergunta.imagem_url}
-									alt=""
-									className="mb-1"
-									width={180}
-									height={100}
-								/>
-							</div>
-						) : null}
-
-						<div className="d-flex flex-column pt-4 pb-3">
-							<span>{procurarResposta(pergunta)}</span>
-							<span>Resposta Correta: {respostaCorreta(pergunta)}</span>
-						</div>
-					</div>
-				))}
-			</div>
-		</div>
-	);
-};
-
-const Questoes = ({
-	data,
-	perguntaIndex,
-	setPerguntaIndex,
-	respostasSalvas,
-	setRespostasSalvas,
-	setComponent,
-}) => {
 	const pergunta = data.simulado[perguntaIndex];
 
 	const proximaQuestao = () => {
@@ -249,7 +126,7 @@ const Questoes = ({
 	};
 
 	const corrigir = () => {
-		setComponent('Resultado');
+		navigate('/resultado');
 	};
 
 	return (
@@ -268,7 +145,9 @@ const Questoes = ({
 
 					<div className="d-flex flex-column align-items-center">
 						<CiClock1 color="#fff" size={35} />
-						<span className="minutos-restantes">20:00</span>
+						<span className="minutos-restantes">
+							<Timer />
+						</span>
 					</div>
 				</div>
 
@@ -356,41 +235,6 @@ const Questoes = ({
 			</div>
 		</div>
 	);
-};
-
-const Simulado = () => {
-	const quantidade = 5;
-	const [componente, setComponent] = useState('Questoes');
-
-	const [perguntaIndex, setPerguntaIndex] = useState(0);
-	const [respostasSalvas, setRespostasSalvas] = useState<TypeRespostasSalvas[]>(
-		[],
-	);
-
-	const { loading, error, data, refetch } = useQuery(REQ_GERAR_SIMULADO, {
-		variables: { quantidade },
-	});
-
-	const navigate = useNavigate();
-	const componentes = {
-		Questoes: (
-			<Questoes
-				data={data}
-				perguntaIndex={perguntaIndex}
-				setPerguntaIndex={setPerguntaIndex}
-				respostasSalvas={respostasSalvas}
-				setRespostasSalvas={setRespostasSalvas}
-				setComponent={setComponent}
-				navigate={navigate}
-			/>
-		),
-		Resultado: <Resultado data={data} respostasSalvas={respostasSalvas} />,
-	};
-
-	if (loading) return <p>Loading...</p>;
-	if (error) return <p>Error : {error.message}</p>;
-
-	return componentes[`${componente}`];
 };
 
 export { Simulado };
