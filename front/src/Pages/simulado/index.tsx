@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useQuery } from '@apollo/client';
 
 import { CiClock1 } from 'react-icons/ci';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import ProgressBar from '@ramonak/react-progress-bar';
 
-import { REQ_GERAR_SIMULADO } from '../../services/querys';
+import {
+	REQ_GERAR_SIMULADO,
+	REQ_PERGUNTAS_PLACAS,
+	REQ_PROCURAR_PERGUNTA,
+} from '../../services/querys';
 
 import { usePerguntas, useRespostasSalvas } from '../../zustand';
 import { Timer } from '../../Components/Timer';
@@ -31,8 +35,14 @@ type TypeRespostasSalvas = {
 	alternativa_marcada: string;
 };
 
+const REQ_OBJ = {
+	geral: REQ_GERAR_SIMULADO,
+	placas: REQ_PERGUNTAS_PLACAS,
+	pesquisa: REQ_PROCURAR_PERGUNTA,
+};
+
 const Simulado = () => {
-	const quantidade = 5;
+	let [searchParams] = useSearchParams();
 
 	const [perguntaIndex, setPerguntaIndex] = useState(0);
 
@@ -44,8 +54,18 @@ const Simulado = () => {
 		(state) => state.setRespostasSalvas,
 	);
 
-	const { loading, error, data } = useQuery(REQ_GERAR_SIMULADO, {
-		variables: { quantidade },
+	const tipo = searchParams.get('tipo');
+	const quantidade = searchParams.get('quantidade');
+	const palavraChave = searchParams.get('palavraChave');
+
+	const VERIFCAR_GRAPHQL = REQ_OBJ[tipo] ? REQ_OBJ[tipo] : REQ_OBJ['geral'];
+	const VERIFICAR_QUANTIDADE = quantidade ? quantidade : 30;
+
+	const { loading, error, data } = useQuery(VERIFCAR_GRAPHQL, {
+		variables: {
+			quantidade: VERIFICAR_QUANTIDADE,
+			palavraChave,
+		},
 		fetchPolicy: 'network-only',
 	});
 
@@ -128,6 +148,28 @@ const Simulado = () => {
 	const corrigir = () => {
 		navigate('/resultado');
 	};
+
+	if (data.simulado.length < 1) {
+		return (
+			<div
+				className="container-resultado-vazio px-3"
+				style={{ marginTop: -25 }}
+			>
+				<div className="container-simulado d-flex flex-column">
+					<div className="pt-4 pb-3">
+						<span className="pb-4">Nenhuma pesquisa encontrada</span>
+						<button
+							className="btn rounded mt-3"
+							style={{ background: ' #83e2a4b3' }}
+							onClick={() => navigate('/simulado')}
+						>
+							Voltar
+						</button>
+					</div>
+				</div>
+			</div>
+		);
+	}
 
 	return (
 		<div className="pb-3">
