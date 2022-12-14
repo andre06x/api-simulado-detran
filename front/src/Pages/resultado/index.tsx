@@ -119,7 +119,7 @@ const Resultado = () => {
 		};
 
 		const verificarAprovacao = () => {
-			const aprovado = status.rc > (70 / 100) * status.total;
+			const aprovado = status.rc >= (70 / 100) * status.total;
 			if (aprovado) {
 				return (
 					<span className="fw-bold ms-2" style={{ color: '#fff' }}>
