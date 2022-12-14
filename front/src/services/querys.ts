@@ -16,7 +16,7 @@ const REQ_GERAR_SIMULADO = gql`
 
 const REQ_PROCURAR_PERGUNTA = gql`
 	query pergunta($palavraChave: String!) {
-		pergunta(palavraChave: $palavraChave)
+		simulado(palavraChave: $palavraChave)
 			@rest(
 				type: "ProcurarPergunta"
 				path: "pesquisar-pergunta?palavras_chave={args.palavraChave}&limit=1"
@@ -33,7 +33,7 @@ const REQ_PROCURAR_PERGUNTA = gql`
 
 const REQ_PERGUNTAS_PLACAS = gql`
 	query Placas {
-		placas @rest(type: "ProcurarPergunta", path: "requisitar-placas") {
+		simulado @rest(type: "ProcurarPergunta", path: "requisitar-placas") {
 			id
 			titulo
 			imagem_url
