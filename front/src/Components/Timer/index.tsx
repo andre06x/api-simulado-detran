@@ -4,7 +4,7 @@ import { useTimer } from '../../zustand';
 
 const Timer = () => {
 	const [cronometro, setCronometro] = useState(0);
-	const setTimer = useTimer((state) => state.setTimer);
+	const setTimer = useTimer((state: any) => state.setTimer);
 
 	useEffect(() => {
 		const interval = setInterval(() => {

@@ -6,13 +6,15 @@ import './styles.scss';
 
 const Resultado = () => {
 	const { status } = useStatusResultado();
-	const data = usePerguntas((state) => state.dataPerguntas);
-	const respostasSalvas = useRespostasSalvas((state) => state.respostasSalvas);
+	const data = usePerguntas((state: any) => state.dataPerguntas);
+	const respostasSalvas = useRespostasSalvas(
+		(state: any) => state.respostasSalvas,
+	);
 	const limparRespostasSalvas = useRespostasSalvas(
-		(state) => state.limparRespostasSalvas,
+		(state: any) => state.limparRespostasSalvas,
 	);
 
-	const timer = useTimer((state) => state.timer);
+	const timer = useTimer((state: any) => state.timer);
 
 	useEffect(() => {
 		console.log(respostasSalvas);
