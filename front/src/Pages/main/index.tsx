@@ -1,11 +1,11 @@
-import React, { InputHTMLAttributes, useState } from 'react';
+import React, { useState, ChangeEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles.scss';
-import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
-import { client } from '../../services/client';
-import { gql } from '@apollo/client';
-import { RestLink } from 'apollo-link-rest';
+import { BiRightArrowAlt } from 'react-icons/bi';
+
 import { verificarPalavras } from './query_perguntas';
+import './styles.scss';
+
+import { toast } from 'react-toastify';
 
 const Main = () => {
 	const [formulario, setFormulario] = useState({
@@ -14,7 +14,7 @@ const Main = () => {
 	});
 	const navigate = useNavigate();
 
-	const changeForm = (event) => {
+	const changeForm = (event: ChangeEvent<HTMLInputElement>) => {
 		setFormulario({ ...formulario, [event.target.name]: event.target.value });
 	};
 
@@ -27,20 +27,24 @@ const Main = () => {
 				navigate(`/simulado?tipo=placas`);
 				break;
 			case 'palavras':
+				if (formulario.palavras === '') {
+					return toast.warning('Campo titulo vazio!');
+				}
+
 				const palavrasValidas = await verificarPalavras(formulario.palavras);
 				if (palavrasValidas) {
-					navigate(
+					return navigate(
 						`/simulado?tipo=pesquisa&palavraChave=${formulario.palavras}`,
 					);
 				} else {
-					console.log('Não foi possivel encontrar');
+					toast.warning(
+						`Não foi possível encontrar perguntas com ${formulario.palavras}`,
+					);
 				}
 
 				break;
 			default:
 				'';
-		}
-		if (tipo !== 'pergunta') {
 		}
 	};
 

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useStatusResultado } from '../../hooks/useStatusResultado';
 import { usePerguntas, useRespostasSalvas, useTimer } from '../../zustand';
 import './styles.scss';
 
 const Resultado = () => {
-	const [status, setStatus] = useState({ rc: 0, re: 0, total: 0 });
-
+	const { status } = useStatusResultado();
 	const data = usePerguntas((state) => state.dataPerguntas);
 	const respostasSalvas = useRespostasSalvas((state) => state.respostasSalvas);
 	const limparRespostasSalvas = useRespostasSalvas(
@@ -13,40 +13,6 @@ const Resultado = () => {
 	);
 
 	const timer = useTimer((state) => state.timer);
-
-	useEffect(() => {
-		if (data !== null) {
-			let rc = 0,
-				re = 0,
-				total = 0;
-
-			for (let i = 0; i < respostasSalvas.length; i++) {
-				const respostaCorreta = data.simulado
-					.filter(
-						(pergunta) => pergunta.id === respostasSalvas[i].pergunta_id,
-					)[0]
-					.respostas.filter((respostas) => respostas.correta === true)[0];
-
-				const respostaEstaCorreta =
-					respostaCorreta.id === respostasSalvas[i].alternativa_id;
-
-				if (respostaEstaCorreta) {
-					rc += 1;
-				}
-			}
-			total = data.simulado.length;
-			re = total - rc;
-
-			const objStatus = {
-				rc,
-				re,
-				total,
-			};
-
-			console.log();
-			setStatus(objStatus);
-		}
-	}, []);
 
 	useEffect(() => {
 		console.log(respostasSalvas);
@@ -127,7 +93,7 @@ const Resultado = () => {
 					</span>
 				);
 			} else {
-				return <span className="ms-2 fw-bold">REPROVADO!</span>;
+				return <span className="ms-2 fw-bold mx-2 text-light">REPROVADO!</span>;
 			}
 		};
 
@@ -146,24 +112,27 @@ const Resultado = () => {
 							<h1 className="titulo">RESULTADO</h1>
 							{/* <h1 onClick={() => novoSimulado()}>NOVO</h1> */}
 							<div>
-								<span className="quantidade-questoes">
-									{`${status.rc}/${status.re}/${status.total}`}
-								</span>
-								{verificarAprovacao()}
+								<button
+									className="btn border text-light fw-bold"
+									onClick={() => {
+										limparRespostasSalvas();
+										navigate(-1);
+									}}
+								>
+									NOVO SIMULADO
+								</button>
 							</div>
 						</div>
 
-						<div className="d-flex flex-column align-items-center">
-							<span className="minutos">{timer}</span>
-							<button
-								className="btn"
-								onClick={() => {
-									limparRespostasSalvas();
-									navigate(-1);
-								}}
-							>
-								Novo simulado
-							</button>
+						<div className="d-flex flex-column ">
+							<div>
+								{verificarAprovacao()}
+								<span className="ms-1 quantidade-questoes">
+									{`${status.rc}/${status.re}/${status.total}`}
+								</span>
+							</div>
+
+							<span className="minutos text-end">{timer}</span>
 						</div>
 					</div>
 				</div>

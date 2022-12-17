@@ -1,43 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+
 import { useQuery } from '@apollo/client';
 
+import { toast } from 'react-toastify';
+import ProgressBar from '@ramonak/react-progress-bar';
 import { CiClock1 } from 'react-icons/ci';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
-import ProgressBar from '@ramonak/react-progress-bar';
 
-import ContentLoader from 'react-content-loader';
+import { usePerguntas, useRespostasSalvas } from '../../zustand';
+import { Timer } from '../../Components/Timer';
+import { Loading } from './Loading';
 
 import {
 	REQ_GERAR_SIMULADO,
 	REQ_PERGUNTAS_PLACAS,
 	REQ_PROCURAR_PERGUNTA,
 } from '../../services/querys';
-
-import { usePerguntas, useRespostasSalvas } from '../../zustand';
-import { Timer } from '../../Components/Timer';
-
 import './styles.scss';
-import { Loading } from './Loading';
-
-type TypePergunta = {
-	titulo: string;
-	imagem_url: string;
-	respostas: Array<any>;
-};
-
-type TypeAlternativas = {
-	nome_alternativa: string;
-	id: string;
-	pergunta_id: string;
-	correta: boolean;
-};
-
-type TypeRespostasSalvas = {
-	pergunta_id: string;
-	alternativa_id: string;
-	alternativa_marcada: string;
-};
+import { TypeAlternativas } from '../../types/types';
 
 const REQ_OBJ = {
 	geral: REQ_GERAR_SIMULADO,
@@ -73,7 +54,6 @@ const Simulado = () => {
 	});
 
 	useEffect(() => {
-		console.log(data);
 		if (data?.simulado.length > 0) {
 			setarPerguntas(data);
 		}
@@ -88,8 +68,13 @@ const Simulado = () => {
 
 	const proximaQuestao = () => {
 		const QUANTIDADE_DE_PERGUNTAS = data.simulado.length;
+
 		if (QUANTIDADE_DE_PERGUNTAS > perguntaIndex + 1) {
 			setPerguntaIndex(perguntaIndex + 1);
+		}
+
+		if (QUANTIDADE_DE_PERGUNTAS === perguntaIndex + 1) {
+			toast.success('Simulado completo! Realize a correção.');
 		}
 	};
 
