@@ -31,12 +31,14 @@ const Simulado = () => {
 
 	const [perguntaIndex, setPerguntaIndex] = useState(0);
 
-	const dataPerguntas = usePerguntas((state) => state.dataPerguntas);
-	const setarPerguntas = usePerguntas((state) => state.setarPerguntas);
+	const dataPerguntas = usePerguntas((state: any) => state.dataPerguntas);
+	const setarPerguntas = usePerguntas((state: any) => state.setarPerguntas);
 
-	const respostasSalvas = useRespostasSalvas((state) => state.respostasSalvas);
+	const respostasSalvas = useRespostasSalvas(
+		(state: any) => state.respostasSalvas,
+	);
 	const setRespostasSalvas = useRespostasSalvas(
-		(state) => state.setRespostasSalvas,
+		(state: any) => state.setRespostasSalvas,
 	);
 
 	const tipo = searchParams.get('tipo');

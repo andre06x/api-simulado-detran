@@ -3,8 +3,10 @@ import { usePerguntas, useRespostasSalvas } from '../zustand';
 
 const useStatusResultado = () => {
 	const [status, setStatus] = useState({ rc: 0, re: 0, total: 0 });
-	const respostasSalvas = useRespostasSalvas((state) => state.respostasSalvas);
-	const data = usePerguntas((state) => state.dataPerguntas);
+	const respostasSalvas = useRespostasSalvas(
+		(state: any) => state.respostasSalvas,
+	);
+	const data = usePerguntas((state: any) => state.dataPerguntas);
 
 	useEffect(() => {
 		if (data !== null) {
