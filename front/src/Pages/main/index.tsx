@@ -2,6 +2,10 @@ import React, { InputHTMLAttributes, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './styles.scss';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
+import { client } from '../../services/client';
+import { gql } from '@apollo/client';
+import { RestLink } from 'apollo-link-rest';
+import { verificarPalavras } from './query_perguntas';
 
 const Main = () => {
 	const [formulario, setFormulario] = useState({
@@ -14,7 +18,7 @@ const Main = () => {
 		setFormulario({ ...formulario, [event.target.name]: event.target.value });
 	};
 
-	const simulado = (tipo: string) => {
+	const simulado = async (tipo: string) => {
 		switch (tipo) {
 			case 'geral':
 				navigate(`/simulado?tipo=geral&quantidade=${formulario.quantidade}`);
@@ -22,7 +26,17 @@ const Main = () => {
 			case 'placas':
 				navigate(`/simulado?tipo=placas`);
 				break;
+			case 'palavras':
+				const palavrasValidas = await verificarPalavras(formulario.palavras);
+				if (palavrasValidas) {
+					navigate(
+						`/simulado?tipo=pesquisa&palavraChave=${formulario.palavras}`,
+					);
+				} else {
+					console.log('Não foi possivel encontrar');
+				}
 
+				break;
 			default:
 				'';
 		}
@@ -78,7 +92,13 @@ const Main = () => {
 									value={formulario.quantidade}
 									onChange={changeForm}
 									className=""
-									style={{ width: 30, height: 30 }}
+									style={{
+										width: 30,
+										height: 30,
+										border: 'solid 1px #ddd',
+										color: '#705959',
+										borderRadius: 2,
+									}}
 									type="text"
 								/>
 							</div>
@@ -128,14 +148,20 @@ const Main = () => {
 									style={{ color: '#b8b8b8', fontSize: 14 }}
 									className="form-label me-2 text-muted"
 								>
-									palavras
+									titulo
 								</label>
 								<input
 									className=""
 									name="palavras"
 									value={formulario.palavras}
 									onChange={changeForm}
-									style={{ width: 200, height: 30 }}
+									style={{
+										width: 200,
+										height: 30,
+										border: 'solid 1px #ddd',
+										color: '#705959',
+										borderRadius: 2,
+									}}
 									type="text"
 								/>
 							</div>
@@ -144,6 +170,7 @@ const Main = () => {
 						<div
 							className="rounded d-flex justify-content-center align-items-center"
 							style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
+							onClick={() => simulado('palavras')}
 						>
 							<BiRightArrowAlt size={35} color="#fff" />
 						</div>
@@ -151,32 +178,6 @@ const Main = () => {
 				</div>
 			</div>
 		</div>
-
-		// <div className="container-main px-3">
-		// 	<div className="container-simulado">
-		// 		<div className="pt-4 pb-3">
-		// 			<span className="pb-4">Bem vindo!</span>
-		// 			<p>
-		// 				O Simulado Pro ajuda na preparação do candidato para a prova teórica
-		// 				do detran rj, que é composto de 30 questões de múltipla escolha e
-		// 				tem duração de 60 minutos.
-		// 			</p>
-
-		// 			<ul>
-		// 				<li>Questões gerais</li>
-		// 				<li>Somente placas</li>
-		// 				<li>Pesquisar questões</li>
-		// 			</ul>
-		// 			<button
-		// 				className="btn rounded mt-3"
-		// 				style={{ background: ' #83e2a4b3' }}
-		// 				onClick={() => navigate('/simulado')}
-		// 			>
-		// 				Voltar
-		// 			</button>
-		// 		</div>
-		// 	</div>
-		// </div>
 	);
 };
 
