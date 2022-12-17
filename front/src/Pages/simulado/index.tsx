@@ -6,6 +6,8 @@ import { CiClock1 } from 'react-icons/ci';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 import ProgressBar from '@ramonak/react-progress-bar';
 
+import ContentLoader from 'react-content-loader';
+
 import {
 	REQ_GERAR_SIMULADO,
 	REQ_PERGUNTAS_PLACAS,
@@ -16,6 +18,8 @@ import { usePerguntas, useRespostasSalvas } from '../../zustand';
 import { Timer } from '../../Components/Timer';
 
 import './styles.scss';
+import { Loading } from './Loading';
+
 type TypePergunta = {
 	titulo: string;
 	imagem_url: string;
@@ -66,7 +70,6 @@ const Simulado = () => {
 			quantidade: VERIFICAR_QUANTIDADE,
 			palavraChave,
 		},
-		fetchPolicy: 'network-only',
 	});
 
 	useEffect(() => {
@@ -78,7 +81,7 @@ const Simulado = () => {
 
 	const navigate = useNavigate();
 
-	if (loading) return <p>Loading...</p>;
+	if (loading) return <Loading />;
 	if (error) return <p>Error : {error.message}</p>;
 
 	const pergunta = data.simulado[perguntaIndex];
@@ -174,9 +177,12 @@ const Simulado = () => {
 	return (
 		<div className="pb-3">
 			<div
-				className="container-header px-3 pt-3 pb-2"
+				className="container-header px-3 pt-2 pb-2"
 				style={{ backgroundColor: '#28A956' }}
 			>
+				<div className="py-2" onClick={() => navigate('/')}>
+					<BiLeftArrowAlt color="white" size={35} />
+				</div>
 				<div className="d-flex align-items-center justify-content-between mb-3">
 					<div className="d-flex flex-column">
 						<h1 className="titulo">Simulado</h1>
