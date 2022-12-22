@@ -1,38 +1,39 @@
 {
-  "name": "front",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .ts,.tsx"
-  },
-  "dependencies": {
-    "@apollo/client": "^3.7.2",
-    "@emotion/react": "^11.10.5",
-    "@mui/material": "^5.11.0",
-    "@ramonak/react-progress-bar": "^5.0.3",
-    "@types/react-icons": "^3.0.0",
-    "apollo-link-rest": "^0.9.0",
-    "bootstrap": "^5.2.3",
-    "graphql": "^16.6.0",
-    "prettier": "^2.8.1",
-    "qs": "^6.11.0",
-    "react": "^18.2.0",
-    "react-content-loader": "^6.2.0",
-    "react-dom": "^18.2.0",
-    "react-router-dom": "^6.4.5",
-    "react-toastify": "^9.1.1",
-    "sass": "^1.56.2",
-    "zustand": "^3.5.10"
-  },
-  "devDependencies": {
-    "@types/react": "^18.0.24",
-    "@types/react-dom": "^18.0.8",
-    "@vitejs/plugin-react": "^2.2.0",
-    "typescript": "^4.6.4",
-    "vite": "^3.2.3"
-  }
+	"name": "front",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"preview": "vite preview",
+		"lint": "eslint . --ext .ts,.tsx",
+		"serve": "serve -s dist -p 3000"
+	},
+	"dependencies": {
+		"@apollo/client": "^3.7.2",
+		"@emotion/react": "^11.10.5",
+		"@mui/material": "^5.11.0",
+		"@ramonak/react-progress-bar": "^5.0.3",
+		"@types/react-icons": "^3.0.0",
+		"apollo-link-rest": "^0.9.0",
+		"bootstrap": "^5.2.3",
+		"graphql": "^16.6.0",
+		"prettier": "^2.8.1",
+		"qs": "^6.11.0",
+		"react": "^18.2.0",
+		"react-content-loader": "^6.2.0",
+		"react-dom": "^18.2.0",
+		"react-router-dom": "^6.4.5",
+		"react-toastify": "^9.1.1",
+		"sass": "^1.56.2",
+		"zustand": "^3.5.10"
+	},
+	"devDependencies": {
+		"@types/react": "^18.0.24",
+		"@types/react-dom": "^18.0.8",
+		"@vitejs/plugin-react": "^2.2.0",
+		"typescript": "^4.6.4",
+		"vite": "^3.2.3"
+	}
 }
