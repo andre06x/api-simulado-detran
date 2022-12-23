@@ -1,27 +1,24 @@
 import create from 'zustand';
 
-export const usePerguntas = create((set) => ({
+export const usePerguntas = create((set: any) => ({
 	dataPerguntas: null,
 	// @ts-ignore
 	setarPerguntas: (data) => set(() => ({ dataPerguntas: data })),
-	// @ts-ignore
 	limparPerguntas: () => set({ dataPerguntas: [] }),
 }));
 
-// @ts-ignore
-export const useRespostasSalvas = create((set) => ({
-	// @ts-ignore
+export const useRespostasSalvas = create((set: any) => ({
 	respostasSalvas: [],
 	// @ts-ignore
-
 	setRespostasSalvas: (data) => set(() => ({ respostasSalvas: data })),
-	// @ts-ignore
-
 	limparRespostasSalvas: () => set({ respostasSalvas: [] }),
 }));
 
-export const useTimer = create((set) => ({
+const useTimer = create((set: any) => ({
 	timer: '',
+	// @ts-ignore
 	setTimer: (data) => set(() => ({ timer: data })),
-	limparRespostasSalvas: () => set({ timer: '' }),
+	limparTimer: () => set({ timer: '' }),
 }));
+
+export { useTimer };

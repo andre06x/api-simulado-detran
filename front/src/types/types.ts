@@ -1,4 +1,5 @@
 type TypePergunta = {
+	id: string;
 	titulo: string;
 	imagem_url: string;
 	respostas: Array<any>;
