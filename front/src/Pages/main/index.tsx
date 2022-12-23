@@ -65,118 +65,120 @@ const Main = () => {
 				</div>
 			</div>
 
-			<div className="px-3" style={{ marginTop: -15 }}>
-				<div className="container-simulado" style={{ borderRadius: 3 }}>
-					<p>
-						O Simulado Pro ajuda na preparação do candidato para a prova teórica
-						do detran rj, que é composto de 30 questões de múltipla escolha e
-						tem duração de 60 minutos.
-					</p>
-				</div>
-				<div className="d-flex flex-column">
-					<div
-						className="btn  py-3 mb-3 d-flex justify-content-between align-items-center"
-						style={{
-							backgroundColor: '#fff',
-							boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-						}}
-					>
-						<div className="d-flex flex-column text-start">
-							<span className="text-muted">Simulado Geral</span>
+			<div className="container">
+				<div className="px-3" style={{ marginTop: -15 }}>
+					<div className="container-simulado" style={{ borderRadius: 3 }}>
+						<p>
+							O Simulado Pro ajuda na preparação do candidato para a prova
+							teórica do detran rj, que é composta de 30 questões de múltipla
+							escolha e tem duração de 60 minutos.
+						</p>
+					</div>
+					<div className="d-flex flex-column">
+						<div
+							className="btn  py-3 mb-3 d-flex justify-content-between align-items-center"
+							style={{
+								backgroundColor: '#fff',
+								boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+							}}
+						>
+							<div className="d-flex flex-column text-start">
+								<span className="text-muted">Simulado Geral</span>
 
-							<div className="d-flex">
-								<label
-									style={{ color: '#b8b8b8', fontSize: 14 }}
-									className="form-label me-2 text-muted"
-								>
-									quantidade
-								</label>
-								<input
-									name="quantidade"
-									value={formulario.quantidade}
-									onChange={changeForm}
-									className=""
-									style={{
-										width: 30,
-										height: 30,
-										border: 'solid 1px #ddd',
-										color: '#705959',
-										borderRadius: 2,
-									}}
-									type="text"
-								/>
+								<div className="d-flex">
+									<label
+										style={{ color: '#b8b8b8', fontSize: 14 }}
+										className="form-label me-2 text-muted"
+									>
+										quantidade
+									</label>
+									<input
+										name="quantidade"
+										value={formulario.quantidade}
+										onChange={changeForm}
+										className=""
+										style={{
+											width: 30,
+											height: 30,
+											border: 'solid 1px #ddd',
+											color: '#705959',
+											borderRadius: 2,
+										}}
+										type="text"
+									/>
+								</div>
+							</div>
+
+							<div
+								className="rounded d-flex justify-content-center align-items-center"
+								onClick={() => simulado('geral')}
+								style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
+							>
+								<BiRightArrowAlt size={35} color="#fff" />
 							</div>
 						</div>
 
 						<div
-							className="rounded d-flex justify-content-center align-items-center"
-							onClick={() => simulado('geral')}
-							style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
+							className="btn  py-3 mb-3 d-flex justify-content-between align-items-center"
+							style={{
+								backgroundColor: '#fff',
+								boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+							}}
 						>
-							<BiRightArrowAlt size={35} color="#fff" />
-						</div>
-					</div>
+							<div className="d-flex flex-column text-start">
+								<span className="text-muted">Placas</span>
+							</div>
 
-					<div
-						className="btn  py-3 mb-3 d-flex justify-content-between align-items-center"
-						style={{
-							backgroundColor: '#fff',
-							boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-						}}
-					>
-						<div className="d-flex flex-column text-start">
-							<span className="text-muted">Placas</span>
-						</div>
-
-						<div
-							className="rounded d-flex justify-content-center align-items-center"
-							onClick={() => simulado('placas')}
-							style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
-						>
-							<BiRightArrowAlt size={35} color="#fff" />
-						</div>
-					</div>
-
-					<div
-						className="btn py-3 mb-3 d-flex justify-content-between align-items-center"
-						style={{
-							backgroundColor: '#fff',
-							boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
-						}}
-					>
-						<div className="d-flex flex-column text-start">
-							<span className="text-muted">Pesquisar pergunta</span>
-
-							<div className="d-flex">
-								<label
-									style={{ color: '#b8b8b8', fontSize: 14 }}
-									className="form-label me-2 text-muted"
-								>
-									titulo
-								</label>
-								<input
-									className=""
-									name="palavras"
-									value={formulario.palavras}
-									onChange={changeForm}
-									style={{
-										width: 200,
-										height: 30,
-										border: 'solid 1px #ddd',
-										color: '#705959',
-										borderRadius: 2,
-									}}
-									type="text"
-								/>
+							<div
+								className="rounded d-flex justify-content-center align-items-center"
+								onClick={() => simulado('placas')}
+								style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
+							>
+								<BiRightArrowAlt size={35} color="#fff" />
 							</div>
 						</div>
 
 						<div
-							className="rounded d-flex justify-content-center align-items-center"
-							style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
-							onClick={() => simulado('palavras')}
+							className="btn py-3 mb-3 d-flex justify-content-between align-items-center"
+							style={{
+								backgroundColor: '#fff',
+								boxShadow: 'rgba(100, 100, 111, 0.2) 0px 7px 29px 0px',
+							}}
 						>
-							<BiRightArrowAlt size={35} color="#fff" />
+							<div className="d-flex flex-column text-start">
+								<span className="text-muted">Pesquisar pergunta</span>
+
+								<div className="d-flex">
+									<label
+										style={{ color: '#b8b8b8', fontSize: 14 }}
+										className="form-label me-2 text-muted"
+									>
+										titulo
+									</label>
+									<input
+										className=""
+										name="palavras"
+										value={formulario.palavras}
+										onChange={changeForm}
+										style={{
+											width: 200,
+											height: 30,
+											border: 'solid 1px #ddd',
+											color: '#705959',
+											borderRadius: 2,
+										}}
+										type="text"
+									/>
+								</div>
+							</div>
+
+							<div
+								className="rounded d-flex justify-content-center align-items-center"
+								style={{ backgroundColor: '#28A956', width: 50, height: 50 }}
+								onClick={() => simulado('palavras')}
+							>
+								<BiRightArrowAlt size={35} color="#fff" />
+							</div>
 						</div>
 					</div>
 				</div>

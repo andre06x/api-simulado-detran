@@ -10,7 +10,6 @@ const Timer = () => {
 		const interval = setInterval(() => {
 			setCronometro((time) => time + 1000);
 		}, 1000);
-		// getTime(tempoExpiracao1h as unknown),
 
 		return () => clearInterval(interval);
 	}, []);

@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useStatusResultado } from '../../hooks/useStatusResultado';
+import { TypeAlternativas, TypePergunta } from '../../types/types';
 import { usePerguntas, useRespostasSalvas, useTimer } from '../../zustand';
 import './styles.scss';
 
@@ -15,6 +16,7 @@ const Resultado = () => {
 	);
 
 	const timer = useTimer((state: any) => state.timer);
+	const limparTimer = useTimer((state: any) => state.limparTimer);
 
 	useEffect(() => {
 		console.log(respostasSalvas);
@@ -29,7 +31,7 @@ const Resultado = () => {
 				style={{ marginTop: -25 }}
 			>
 				<div className="container-simulado">
-					<div className="pt-4 pb-3">
+					<div className="d-flex flex-column align-items-center pt-4 pb-3">
 						<span className="pb-4">Nenhum simulado encontrado!</span>
 						<button
 							className="btn rounded mt-3"
@@ -42,25 +44,28 @@ const Resultado = () => {
 				</div>
 			</div>
 		);
-	}
-	if (data !== null) {
-		const respostaCorreta = (perguntaItem) => {
+	} else {
+		const respostaCorreta = (perguntaItem: TypePergunta) => {
 			const respostaCorreta = data.simulado
-				.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
-				.respostas.filter((respostas) => respostas.correta === true)
+				.filter((pergunta: TypePergunta) => pergunta.id === perguntaItem.id)[0]
+				.respostas.filter(
+					(respostas: TypeAlternativas) => respostas.correta === true,
+				)
 				.shift();
 
 			//console.log(respostaCorreta);
 			return respostaCorreta.nome_alternativa;
 		};
 
-		const procurarResposta = (perguntaItem) => {
+		const procurarResposta = (perguntaItem: TypePergunta) => {
 			const respostaCorreta = data.simulado
-				.filter((pergunta) => pergunta.id === perguntaItem.id)[0]
-				.respostas.filter((respostas) => respostas.correta === true)[0];
+				.filter((pergunta: TypePergunta) => pergunta.id === perguntaItem.id)[0]
+				.respostas.filter(
+					(respostas: TypeAlternativas) => respostas.correta === true,
+				)[0];
 
 			const perguntaRespondida = respostasSalvas.find(
-				(r) => r.pergunta_id === perguntaItem.id,
+				(r: TypeAlternativas) => r.pergunta_id === perguntaItem.id,
 			);
 
 			if (!perguntaRespondida) {
@@ -90,17 +95,19 @@ const Resultado = () => {
 			const aprovado = status.rc >= (70 / 100) * status.total;
 			if (aprovado) {
 				return (
-					<span className="fw-bold ms-2" style={{ color: '#fff' }}>
+					<span className="fw-bold text-end" style={{ color: '#fff' }}>
 						APROVADO!
 					</span>
 				);
 			} else {
-				return <span className="ms-2 fw-bold mx-2 text-light">REPROVADO!</span>;
+				return <span className="text-end fw-bold text-light">REPROVADO!</span>;
 			}
 		};
 
 		const novoSimulado = () => {
-			navigate('/simulado');
+			limparRespostasSalvas();
+			navigate(-1);
+			limparTimer();
 		};
 
 		return (
@@ -116,10 +123,7 @@ const Resultado = () => {
 							<div>
 								<button
 									className="btn border text-light fw-bold"
-									onClick={() => {
-										limparRespostasSalvas();
-										navigate(-1);
-									}}
+									onClick={() => novoSimulado()}
 								>
 									NOVO SIMULADO
 								</button>
@@ -127,43 +131,42 @@ const Resultado = () => {
 						</div>
 
 						<div className="d-flex flex-column ">
-							<div>
-								{verificarAprovacao()}
-								<span className="ms-1 quantidade-questoes">
-									{`${status.rc}/${status.re}/${status.total}`}
-								</span>
-							</div>
-
+							{verificarAprovacao()}
+							<span className="ms-1 quantidade-questoes text-end">
+								{`${status.rc}/${status.re}/${status.total}`}
+							</span>
 							<span className="minutos text-end">{timer}</span>
 						</div>
 					</div>
 				</div>
 
-				<div className="px-3" style={{ marginTop: -25 }}>
-					{data.simulado.map((pergunta, index: number) => (
-						<div className="container-simulado">
-							<span className="identificador-pergunta">
-								QUESTÃO {index + 1}
-							</span>
-							<p>{pergunta.titulo}</p>
-							{pergunta.imagem_url ? (
-								<div>
-									<img
-										src={pergunta.imagem_url}
-										alt=""
-										className="mb-1"
-										width={180}
-										height={100}
-									/>
-								</div>
-							) : null}
+				<div className="container">
+					<div className="px-3" style={{ marginTop: -25 }}>
+						{data.simulado.map((pergunta: TypePergunta, index: number) => (
+							<div className="container-simulado">
+								<span className="identificador-pergunta">
+									QUESTÃO {index + 1}
+								</span>
+								<p>{pergunta.titulo}</p>
+								{pergunta.imagem_url ? (
+									<div>
+										<img
+											src={pergunta.imagem_url}
+											alt=""
+											className="mb-1"
+											width={180}
+											height={100}
+										/>
+									</div>
+								) : null}
 
-							<div className="d-flex flex-column pt-4 pb-3">
-								<span>{procurarResposta(pergunta)}</span>
-								<span>Resposta Correta: {respostaCorreta(pergunta)}</span>
+								<div className="d-flex flex-column pt-4 pb-3">
+									<span>{procurarResposta(pergunta)}</span>
+									<span>Resposta Correta: {respostaCorreta(pergunta)}</span>
+								</div>
 							</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
 			</div>
 		);

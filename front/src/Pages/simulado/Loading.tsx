@@ -58,7 +58,7 @@ const Loading = () => {
 				</div>
 			</div>
 
-			<div className="px-3" style={{ marginTop: -40 }}>
+			<div className="container px-3" style={{ marginTop: -40 }}>
 				<div className="container-simulado">
 					<span className="identificador-pergunta">
 						QUESTÃO{' '}

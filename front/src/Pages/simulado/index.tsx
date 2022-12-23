@@ -8,7 +8,7 @@ import ProgressBar from '@ramonak/react-progress-bar';
 import { CiClock1 } from 'react-icons/ci';
 import { BiLeftArrowAlt, BiRightArrowAlt } from 'react-icons/bi';
 
-import { usePerguntas, useRespostasSalvas } from '../../zustand';
+import { usePerguntas, useRespostasSalvas, useTimer } from '../../zustand';
 import { Timer } from '../../Components/Timer';
 import { Loading } from './Loading';
 
@@ -18,7 +18,7 @@ import {
 	REQ_PROCURAR_PERGUNTA,
 } from '../../services/querys';
 import './styles.scss';
-import { TypeAlternativas } from '../../types/types';
+import { TypeAlternativas, TypeRespostasSalvas } from '../../types/types';
 
 const REQ_OBJ = {
 	geral: REQ_GERAR_SIMULADO,
@@ -33,6 +33,7 @@ const Simulado = () => {
 
 	const dataPerguntas = usePerguntas((state: any) => state.dataPerguntas);
 	const setarPerguntas = usePerguntas((state: any) => state.setarPerguntas);
+	const timer = useTimer((state: any) => state.timer);
 
 	const respostasSalvas = useRespostasSalvas(
 		(state: any) => state.respostasSalvas,
@@ -40,11 +41,12 @@ const Simulado = () => {
 	const setRespostasSalvas = useRespostasSalvas(
 		(state: any) => state.setRespostasSalvas,
 	);
-
 	const tipo = searchParams.get('tipo');
 	const quantidade = searchParams.get('quantidade');
 	const palavraChave = searchParams.get('palavraChave');
+	const navigate = useNavigate();
 
+	// @ts-ignore
 	const VERIFCAR_GRAPHQL = REQ_OBJ[tipo] ? REQ_OBJ[tipo] : REQ_OBJ['geral'];
 	const VERIFICAR_QUANTIDADE = quantidade ? quantidade : 30;
 
@@ -61,7 +63,14 @@ const Simulado = () => {
 		}
 	}, [data, dataPerguntas]);
 
-	const navigate = useNavigate();
+	useEffect(() => {
+		if (timer === '60:00') {
+			alert(
+				'Tempo Expirado. Você será redirecionado para a página de resultados',
+			);
+			navigate('/resultado');
+		}
+	}, [timer]);
 
 	if (loading) return <Loading />;
 	if (error) return <p>Error : {error.message}</p>;
@@ -88,15 +97,15 @@ const Simulado = () => {
 
 	const marcarResposta = (alternativa: TypeAlternativas) => {
 		const procurarPergunta = respostasSalvas.find(
-			(r) => r.pergunta_id === alternativa.pergunta_id,
+			(r: TypeRespostasSalvas) => r.pergunta_id === alternativa.pergunta_id,
 		);
 
 		if (procurarPergunta) {
 			const indexPergunta = respostasSalvas.indexOf(procurarPergunta);
 
 			const novasRespostasSalvas = respostasSalvas
-				.filter((r) => r !== undefined)
-				.map((item, i) => {
+				.filter((r: TypeRespostasSalvas) => r !== undefined)
+				.map((item: TypeRespostasSalvas, i: number) => {
 					if (i === indexPergunta) {
 						return {
 							...item,
@@ -125,7 +134,7 @@ const Simulado = () => {
 
 	const verificarSelecionado = (alternativa: TypeAlternativas) => {
 		const procurarPergunta = respostasSalvas.find(
-			(r) => r.pergunta_id === alternativa.pergunta_id,
+			(r: TypeRespostasSalvas) => r.pergunta_id === alternativa.pergunta_id,
 		);
 
 		if (procurarPergunta?.alternativa_id === alternativa.id) {
@@ -200,7 +209,7 @@ const Simulado = () => {
 				</div>
 			</div>
 
-			<div className="px-3" style={{ marginTop: -40 }}>
+			<div className="container px-3" style={{ marginTop: -40 }}>
 				<div className="container-simulado">
 					<span className="identificador-pergunta">
 						QUESTÃO {perguntaIndex + 1}

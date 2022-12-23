@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { TypeAlternativas, TypePergunta } from '../types/types';
 import { usePerguntas, useRespostasSalvas } from '../zustand';
 
 const useStatusResultado = () => {
@@ -17,9 +18,12 @@ const useStatusResultado = () => {
 			for (let i = 0; i < respostasSalvas.length; i++) {
 				const respostaCorreta = data.simulado
 					.filter(
-						(pergunta) => pergunta.id === respostasSalvas[i].pergunta_id,
+						(pergunta: TypePergunta) =>
+							pergunta.id === respostasSalvas[i].pergunta_id,
 					)[0]
-					.respostas.filter((respostas) => respostas.correta === true)[0];
+					.respostas.filter(
+						(respostas: TypeAlternativas) => respostas.correta === true,
+					)[0];
 
 				const respostaEstaCorreta =
 					respostaCorreta.id === respostasSalvas[i].alternativa_id;
