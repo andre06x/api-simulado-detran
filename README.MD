@@ -20,8 +20,10 @@
 
 <h1 id="tecnologias"> 🚀 Tecnologias</h1>
 
-Esse projeto foi desenvolvido com as seguintes tecnologias:
+[APP REACT SPA](http://140.238.180.226:3000/)  
+[API SWAGGER](http://140.238.180.226:5005/swagger/)
 
+Esse projeto foi desenvolvido com as seguintes tecnologias:
 - [NodeJS](https://nodejs.org/)
 - [Express](https://expressjs.com/pt-br/)
 - [Knex](http://knexjs.org/)
